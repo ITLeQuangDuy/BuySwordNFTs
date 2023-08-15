@@ -45,16 +45,39 @@ describe("Test Sword", async function(){
 
         await sword.addRound(_startTime, _endTime, _maxNFTsPerUser, _totalNFTsInRound, _newPrice, _newTokenAddress);
         const roundIndex = await sword.currentRound();
-        console.log("roundIndex", roundIndex);
+        //console.log("roundIndex", roundIndex);
         const round = await sword.getRound(roundIndex);
-        console.log(round);
+        //console.log(round);
+    });
+
+    //ngoai le
+    it("Test AddRound 3 Start round invalid", async function(){
+        const timePresent = Math.floor(Date.now() / 1000);
+        const _startTime = timePresent;
+        const _endTime = timePresent + 604800;
+        const _maxNFTsPerUser = 5;
+        const _totalNFTsInRound = 500;
+        const _newPrice = [ethers.parseEther("10"), ethers.parseEther("20")];
+        const _newTokenAddress = await myToken.getAddress();
+        console.log(_startTime, _endTime, _totalNFTsInRound, _maxNFTsPerUser, _newPrice, _newTokenAddress);
+
+        await sword.addRound(_startTime, _endTime, _maxNFTsPerUser, _totalNFTsInRound, _newPrice, _newTokenAddress);
+        const roundIndex = await sword.currentRound();
+        //console.log("roundIndex", roundIndex);
+        const round = await sword.getRound(roundIndex);
+        //console.log(round);
     });
     
     it("Test SetTimeOnSaleNextRound", async function(){
         const setTime = 10000;
-        await sword.setTimeOnSaleNextRound(setTime);
-        const timeOnSaleUpdate = await sword.timeNextRound;
-        console.log("aaa", await sword.timeNextRound);
-        //expect(timeOnSaleUpdate).to.equal(setTime);
+        await sword.connect(owner).setTimeOnSaleNextRound(setTime);
+        const timeOnSaleUpdate = await sword.timeNextRound();
+        //console.log("aaa", await sword.timeNextRound());
+        expect(timeOnSaleUpdate).to.equal(setTime);
     });
+
+    it("Buy NFTs with ether", async function(){
+        
+    });
+
 });

@@ -42,6 +42,11 @@ contract SwordNFTs is ERC1155, Ownable {
         currentRound++;
         Round storage round = rounds[currentRound];
 
+        if (currentRound > 1) {
+            Round storage prevRound = rounds[currentRound - 1];
+            require(block.timestamp >= prevRound.endTime + timeNextRound, "Start round invalid");
+        }
+
         round.startTime = _startTime;
         round.endTime = _endTime;
         round.maxNFTsPerUser = _maxNFTsPerUser;
@@ -97,11 +102,6 @@ contract SwordNFTs is ERC1155, Ownable {
         require(block.timestamp >= round.startTime,"Not time open sale");
         require(block.timestamp <= round.endTime, "Pass time on sale");
         require(tokenId < round.prices.length, "Invalid tokenId");
-
-        if (currentRound > 1) {
-            Round storage prevRound = rounds[currentRound - 1];
-            require(block.timestamp >= prevRound.endTime + timeNextRound, "It's not time to start selling the new round yet");
-        }
 
         if (round.tokenAddress == address(0)) {
             require(msg.value == round.prices[tokenId] * amount, "Not enough native coin");

@@ -1,27 +1,22 @@
-// const { ethers } = require("hardhat");
+const { ethers } = require("hardhat");
 
-// const deployToken = async () => {
-//     const MyToken = await ethers.getContractFactory("MyToken");
-//     myToken = await MyToken.deploy("USDT Token", "USDT");
-//     console.log("Token address:", await myToken.getAddress());
-// }
+async function main() {
+    const [deployer] = await ethers.getSigners();
 
-// const deployBuySword = async () => {
-//     const SwordNFTs = await ethers.getContractFactory("SwordNFTs");
-//     swordNFTs = await SwordNFTs.deploy();
-//     console.log("Sword address:", await swordNFTs.getAddress());
-// }
+    console.log("Deploying contracts with the account:", deployer.address);
 
-// async function main() {
-//     const [deployer] = await ethers.getSigners();
+    const MyToken = await ethers.getContractFactory("MyToken");
+    const myToken = await MyToken.deploy("USDT Token", "USDT");
 
-//     await deployToken;
-//     await deployBuySword;
-// }
+    // const BuySword = await ethers.getContractFactory("SwordNFTs");
+    // const buySword = await BuySword.deploy();
 
-// main()
-//     .then(() => process.exit(0))
-//     .catch((error) => {
-//         console.error(error);
-//         process.exit(1);
-//     });
+    console.log("MyToken deployed to:", myToken.address);
+}
+
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

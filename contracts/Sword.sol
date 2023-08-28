@@ -2,17 +2,15 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+//import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./ContractERC1155.sol";
 
-interface IERC20 {
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function balanceOf(address account) external view returns (uint256);
-}
-
-contract SwordNFTs is ERC1155, Ownable {
+contract SwordNFTs is Ownable {
     
+    ContractERC1155 public nftContract;
+
     struct Round {
         uint256 startTime;
         uint256 endTime;
@@ -28,9 +26,14 @@ contract SwordNFTs is ERC1155, Ownable {
     
     uint256 public currentRound;
     uint256 public roundIndex = 1;
-    uint256 public timeNextRound = 604800;
 
-    constructor() ERC1155("") {}
+    event BuyNFTs(address addressUser, uint256 amount, uint256 tokenId);
+    event WithdrawEther(address tokenAddress, address addressContract, uint256 totalEther);
+    event WithdrawToken(address tokenAddress, address addressContract, uint256 totalToken);
+
+    constructor(address addressContractMint){
+        nftContract = ContractERC1155(addressContractMint);
+    }
 
     function addRound(
         uint256 _startTime,
@@ -108,29 +111,28 @@ contract SwordNFTs is ERC1155, Ownable {
 
     function buyNFT(uint256 amount, uint256 tokenId) external payable {
         Round storage round = rounds[roundIndex];
+        address userAddress = msg.sender;
 
         require(block.timestamp >= round.startTime,"Not time on sale");
         require(block.timestamp <= round.endTime,"Pass time on sale");
         require(tokenId < round.prices.length, "Invalid tokenId");
-        require(amount + amountBought[msg.sender] <= round.maxNFTsPerUser ,"Max quantity user");
+        require(amount + amountBought[userAddress] <= round.maxNFTsPerUser ,"Max quantity user");
         require(round.totalSupply + amount <= round.totalNFTsInRound, "Max quantity in round");
 
         if (round.tokenAddress == address(0)) {
             require(msg.value == round.prices[tokenId] * amount, "Not enough native coin");
-            _mint(msg.sender, tokenId, amount, "");
-            amountBought[msg.sender] += amount;
+            nftContract.mint(userAddress, tokenId, amount, "");
+            amountBought[userAddress] += amount;
             round.totalSupply += amount;
         } else {
             require(msg.value == 0, "Dont need ether");
-            IERC20(round.tokenAddress).transferFrom(msg.sender, address(this), amount * round.prices[tokenId]);
-            _mint(msg.sender, tokenId, amount,"");
-            amountBought[msg.sender] += amount;
+            IERC20(round.tokenAddress).transferFrom(userAddress, address(this), amount * round.prices[tokenId]);
+            nftContract.mint(userAddress, tokenId, amount,"");
+            amountBought[userAddress] += amount;
             round.totalSupply += amount;
         }
-    }
 
-    function setTimeOnSaleNextRound(uint256 _time) external onlyOwner{
-        timeNextRound = _time;
+        emit BuyNFTs(userAddress, amount, tokenId);
     }
 
     function getEtherContractBalance(address _address) public view returns (uint256) {
@@ -141,10 +143,12 @@ contract SwordNFTs is ERC1155, Ownable {
         if (tokenAddr == address(0)){
             uint256 totalEther = address(this).balance;
             payable(owner()).transfer(totalEther);
+            emit WithdrawEther(tokenAddr, address(this), totalEther);
         }else{
             IERC20 token = IERC20(tokenAddr);
             uint256 totalToken = token.balanceOf(address(this));
             token.transfer(owner(), totalToken);
+            emit WithdrawToken(tokenAddr, address(this), totalToken);
         }
     } 
 }

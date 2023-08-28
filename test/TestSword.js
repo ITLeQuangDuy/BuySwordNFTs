@@ -11,14 +11,18 @@ describe("Test Sword", async function(){
     let signer1;
     let tokenAddr;
     let contractAddr;
+    let contractERC1155;
     it("Deploy",async function () { 
         [owner, signer, signer1, signer2] = await ethers.getSigners();
         
         const MyToken = await ethers.getContractFactory("MyToken");
         myToken = await MyToken.deploy("USDT Token", "USDT");
 
+        const ContractERC1155 = await ethers.getContractFactory("ContractERC1155");
+        contractERC1155 = await ContractERC1155.deploy()
+
         const Sword = await ethers.getContractFactory("SwordNFTs");
-        sword = await Sword.deploy();
+        sword = await Sword.deploy(contractERC1155.target);
 
         tokenAddr = myToken.target;
         contractAddr = sword.target;
@@ -95,23 +99,36 @@ describe("Test Sword", async function(){
     //-----------------------------------------------------------------
     /////////////////////////BUY NFTs/////////////////////////////////
 
+    //ngoai le
+    it("Buy NFTs with ether Only admin can call this function", async function(){
+        const quantity = 2;
+        const tokenId = 0;
+        const roundIndex = 1;
+        const round = await sword.getRound(roundIndex);
+        const price =round.prices[tokenId];
+
+        await sword.connect(owner).setRoundIndex(roundIndex);
+        await expect (sword.connect(owner).buyNFT(quantity, tokenId, {value : BigInt(quantity) * price})).to.be.revertedWith("Only admin can call this function");
+    });
+
     it("Buy NFTs with ether", async function(){
         const quantity = 2;
         const tokenId = 0;
         const roundIndex = 1;
         const round = await sword.getRound(roundIndex);
         const price =round.prices[tokenId];
-        const tokenIDBefore = await sword.balanceOf(owner.address, tokenId);
+        const tokenIDBefore = await contractERC1155.balanceOf(owner.address, tokenId);
 
         await sword.connect(owner).setRoundIndex(roundIndex);
 
         const etherBefore = await ethers.provider.getBalance(owner.getAddress());
+        await contractERC1155.connect(owner).setAdmin(sword.target);
         const tx = await sword.connect(owner).buyNFT(quantity, tokenId, {value : BigInt(quantity) * price});
         const res = await tx.wait();
         const etherAfter = await ethers.provider.getBalance(owner.getAddress());
         const totalGas = etherBefore - etherAfter;
         const total = BigInt(res.gasPrice) * res.gasUsed + tx.value;
-        const tokenIdAfter = await sword.balanceOf(owner.address, tokenId);
+        const tokenIdAfter = await contractERC1155.balanceOf(owner.address, tokenId);
 
         expect(total).to.equal(totalGas);
         expect(tokenIDBefore + BigInt(quantity)).to.equal(tokenIdAfter);
@@ -225,16 +242,6 @@ describe("Test Sword", async function(){
         expect(round.tokenAddress).to.equal(_newTokenAddress);
     });
     
-    //-----------------------------------------------------------------
-    /////////////////////////SET TIME NEXT ROUND/////////////////////////////////
-
-    it("Test SetTimeOnSaleNextRound", async function(){
-        const setTime = 10000;
-        await sword.connect(owner).setTimeOnSaleNextRound(setTime);
-        const timeOnSaleUpdate = await sword.timeNextRound();
-        expect(timeOnSaleUpdate).to.equal(setTime);
-    });
-
     //-----------------------------------------------------------------
     /////////////////////////TEST WITHDRAW/////////////////////////////////
 

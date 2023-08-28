@@ -483,8 +483,8 @@
       ]
     },
     "C:\\Users\\LeQuangDuy\\Desktop\\Solidity\\BuySword\\contracts\\Sword.sol": {
-      "lastModificationDate": 1692349523428,
-      "contentHash": "e0e021f54db20444130e1eb851c2567e",
+      "lastModificationDate": 1692864990174,
+      "contentHash": "ab047244310c90484d9d17e1ffa9e8e5",
       "sourceName": "contracts/Sword.sol",
       "solcConfig": {
         "version": "0.8.19",
@@ -511,14 +511,14 @@
       },
       "imports": [
         "hardhat/console.sol",
-        "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "./ContractERC1155.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "IERC20",
         "SwordNFTs"
       ]
     },
@@ -555,6 +555,118 @@
       ],
       "artifacts": [
         "console"
+      ]
+    },
+    "C:\\Users\\LeQuangDuy\\Desktop\\Solidity\\BuySword\\contracts\\ContractAdmin.sol": {
+      "lastModificationDate": 1692863999742,
+      "contentHash": "269cd3037be4a1c027d0bd3fdf4e9dbe",
+      "sourceName": "contracts/ContractAdmin.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ContractERC1155.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ContractAdmin"
+      ]
+    },
+    "C:\\Users\\LeQuangDuy\\Desktop\\Solidity\\BuySword\\contracts\\ContractERC1155.sol": {
+      "lastModificationDate": 1692864002117,
+      "contentHash": "12b447b5eadbc42fa84804a29cbca2ab",
+      "sourceName": "contracts/ContractERC1155.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC1155/ERC1155.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ContractERC1155"
+      ]
+    },
+    "C:\\Users\\LeQuangDuy\\Desktop\\Solidity\\BuySword\\contracts\\ContractTest.sol": {
+      "lastModificationDate": 1692864000780,
+      "contentHash": "d55b77a93a93683b19c49a024c769d30",
+      "sourceName": "contracts/ContractTest.sol",
+      "solcConfig": {
+        "version": "0.8.19",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ContractERC1155.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ContractTest"
       ]
     }
   }

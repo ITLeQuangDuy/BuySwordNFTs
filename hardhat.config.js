@@ -5,8 +5,8 @@ require('dotenv').config();
 module.exports = {
   solidity: "0.8.19",
   networks: {
-    bsctest: {
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
+    etherscan: {
+      url: "https://eth-goerli.public.blastapi.io",
       accounts: [process.env.PRIV_KEY]
     },
   },
